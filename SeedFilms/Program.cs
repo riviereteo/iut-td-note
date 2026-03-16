@@ -13,23 +13,18 @@ var config = new ConfigurationBuilder()
 
 static string? NonEmpty(string? s) => string.IsNullOrWhiteSpace(s) ? null : s;
 
-// Aspire injecte ConnectionStrings__filmapi et FILMAPI_DATABASENAME quand lancé depuis l'AppHost
-var conn = NonEmpty(Environment.GetEnvironmentVariable("ConnectionStrings__filmapi"))
-    ?? NonEmpty(Environment.GetEnvironmentVariable("ConnectionStrings__mongodb"))
-    ?? NonEmpty(config.GetConnectionString("filmapi"))
+var conn = NonEmpty(Environment.GetEnvironmentVariable("ConnectionStrings__mongodb"))
     ?? NonEmpty(config.GetConnectionString("mongodb"))
-    ?? NonEmpty(config["MongoDb:ConnectionString"])
-    ?? throw new InvalidOperationException(
-        "Chaîne de connexion MongoDB manquante. Définir ConnectionStrings__filmapi (Aspire) ou MongoDb:ConnectionString.");
+    ?? throw new InvalidOperationException("Chaîne de connexion MongoDB manquante. Définir ConnectionStrings__mongodb (Aspire) ou ConnectionStrings:mongodb.");
 
 var dbName = NonEmpty(Environment.GetEnvironmentVariable("FILMAPI_DATABASENAME"))
     ?? config["MongoDb:DatabaseName"]
-    ?? "filmapi";
+    ?? throw new InvalidOperationException("DatabaseName manquant. Définir FILMAPI_DATABASENAME (Aspire) ou MongoDb:DatabaseName.");
 
 var validCounts = new[] { 50_000, 500_000 };
 if (args.Length == 0 || !int.TryParse(args[0], out var total) || !validCounts.Contains(total))
 {
-    Console.WriteLine("Usage: dotnet run --project scripts/SeedFilms -- <count>");
+    Console.WriteLine("Usage: dotnet run --project SeedFilms -- <count>");
     Console.WriteLine("  count: 50000 | 500000");
     return 1;
 }

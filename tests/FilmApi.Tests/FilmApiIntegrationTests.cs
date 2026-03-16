@@ -8,9 +8,6 @@ namespace FilmApi.Tests;
 
 /// <summary>
 /// Tests d'intégration : HTTP → API → Service → Repository → MongoDB.
-/// Consigne TD : créer MongoFixture et adapter la WebApplicationFactory ;
-/// écrire au moins 2 tests (ex. POST /films → 201, GET /films/{id} après POST → 200).
-/// Ce squelette fournit la structure ; les tests sont à compléter / faire passer par l'étudiant.
 /// </summary>
 public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyncLifetime, IDisposable
 {

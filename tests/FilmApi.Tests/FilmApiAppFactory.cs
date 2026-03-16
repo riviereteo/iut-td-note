@@ -24,9 +24,8 @@ public class FilmApiAppFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            var connectionString = _mongo.GetConnectionString();
             services.RemoveAll<IMongoClient>();
-            services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
+            services.AddSingleton<IMongoClient>(new MongoClient(_mongo.GetConnectionString()));
         });
     }
 }

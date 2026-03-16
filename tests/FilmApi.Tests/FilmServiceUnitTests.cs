@@ -8,8 +8,6 @@ namespace FilmApi.Tests;
 
 /// <summary>
 /// Tests unitaires du FilmService avec un mock du repository.
-/// État initial du squelette : à refactoriser en AAA (Arrange / Act / Assert)
-/// et avec des test data builders (FilmBuilder, DirectorBuilder, etc.) au lieu de construire les objets à la main.
 /// </summary>
 public class FilmServiceUnitTests
 {

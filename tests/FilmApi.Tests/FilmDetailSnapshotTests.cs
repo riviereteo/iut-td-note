@@ -3,14 +3,12 @@ using FilmApi.Services;
 using FilmApi.Repositories;
 using NSubstitute;
 using Xunit;
-// Verify (VerifyXunit) : à utiliser pour remplacer les Assert par un snapshot (consigne TD §4)
 
 namespace FilmApi.Tests;
 
 /// <summary>
 /// État initial du squelette : ce test vérifie un DTO complexe (Film avec Réalisateur, Acteurs, Genres)
-/// via une longue série d'Assert.Equal. Consigne TD : refactoriser avec un snapshot Verify
-/// (ex. await Verify(filmDetailDto)) et gérer les champs instables (Id, DateTime) avec les options Verify.
+/// via une longue série d'Assert.Equal.
 /// </summary>
 public class FilmDetailSnapshotTests
 {
