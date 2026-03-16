@@ -1,4 +1,4 @@
-# TD noté — Tests et performance (3h)
+# TD noté — Maîtrise des Tests Logiciels Avancés
 
 ## Prérequis
 
