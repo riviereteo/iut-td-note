@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  BASE_URL: 'http://localhost:1803'
+  BASE_URL: 'http://host.docker.internal:1803'
   COMPOSE_K6: docker compose -f docker-compose.k6.yml
   K6_SCRIPT_DIR: /scripts
 

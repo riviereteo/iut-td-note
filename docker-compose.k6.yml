@@ -2,19 +2,19 @@
 # Prérequis : AppHost Aspire démarré (FilmApi + InfluxDB sur localhost).
 # Sous Linux/WSL : network_mode: host permet à k6 d'accéder à localhost (API + InfluxDB).
 # Sous Windows (Docker Desktop) : host network ne partage pas localhost ; privilégier WSL2 ou Linux.
-
 services:
   k6:
     build:
       context: .
       dockerfile: Dockerfile.k6
     image: iut-td-note-k6:latest
-    network_mode: host
+    networks:
+      - aspire-network
     environment:
       K6_INFLUXDB_ORGANIZATION: ${K6_INFLUXDB_ORGANIZATION:-k6}
       K6_INFLUXDB_BUCKET: ${K6_INFLUXDB_BUCKET:-k6}
       K6_INFLUXDB_TOKEN: ${K6_INFLUXDB_TOKEN:-k6-influxdb-token}
-      K6_INFLUXDB_ADDR: ${K6_INFLUXDB_ADDR:-http://127.0.0.1:8086}
+      K6_INFLUXDB_ADDR: ${K6_INFLUXDB_ADDR:-http://influxdb:8086}
       BASE_URL: ${BASE_URL}
       TOTAL_ITEMS: ${TOTAL_ITEMS}
       PAGE_SIZE: ${PAGE_SIZE:-100}
@@ -22,3 +22,8 @@ services:
       - ./k6:/scripts:ro
     profiles:
       - run
+
+networks:
+  aspire-network:
+    external: true
+    name: aspire-persistent-network-fcc1f537-AppHost

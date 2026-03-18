@@ -1,9 +1,6 @@
 using FilmApi.Models;
 using FilmApi.Repositories;
-<<<<<<< HEAD
-=======
 using FilmApi.Services;
->>>>>>> etape3
 using FilmApi.Tests.Builders;
 using NSubstitute;
 using VerifyXunit;
@@ -24,19 +21,13 @@ public class FilmDetailSnapshotTests
         // Arrange
         var substituteRepo = Substitute.For<IFilmRepository>();
 
-<<<<<<< HEAD
         var film = FilmBuilder.AFilm()
-=======
-        var film = FilmBuilder
-            .AFilm()
->>>>>>> etape3
             .WithId("film-abc-123")
             .WithTitle("Dune")
             .WithSummary("Sur la planète Arrakis...")
             .WithYear(2021)
             .WithDurationMinutes(155)
             .WithReleaseDate(new DateTime(2021, 9, 15))
-<<<<<<< HEAD
             .WithDirector(DirectorBuilder.ADirector()
                 .WithId("dir-1")
                 .WithLastName("Villeneuve")
@@ -45,41 +36,10 @@ public class FilmDetailSnapshotTests
                 .WithBirthDate(new DateTime(1967, 10, 3)))
             .WithActors(
                 ActorBuilder.AnActor()
-=======
-            .WithDirector(
-                DirectorBuilder
-                    .ADirector()
-                    .WithId("dir-1")
-                    .WithLastName("Villeneuve")
-                    .WithFirstName("Denis")
-                    .WithNationality("CA")
-                    .WithBirthDate(new DateTime(1967, 10, 3))
-            )
-            .WithActors(
-                ActorBuilder
-                    .AnActor()
->>>>>>> etape3
                     .WithId("a1")
                     .WithLastName("Chalamet")
                     .WithFirstName("Timothée")
                     .WithRole("Paul Atréides"),
-<<<<<<< HEAD
-                ActorBuilder.AnActor()
-                    .WithId("a2")
-                    .WithLastName("Zendaya")
-                    .WithFirstName("")
-                    .WithRole("Chani"))
-            .WithGenres(
-                GenreBuilder.AGenre()
-                    .WithId("g1")
-                    .WithName("Science-Fiction"),
-                GenreBuilder.AGenre()
-                    .WithId("g2")
-                    .WithName("Aventure"))
-            .WithProductionCountry(CountryBuilder.ACountry()
-                .WithCode("US")
-                .WithName("États-Unis"))
-=======
                 ActorBuilder
                     .AnActor()
                     .WithId("a2")
@@ -92,7 +52,6 @@ public class FilmDetailSnapshotTests
                 GenreBuilder.AGenre().WithId("g2").WithName("Aventure")
             )
             .WithProductionCountry(CountryBuilder.ACountry().WithCode("US").WithName("États-Unis"))
->>>>>>> etape3
             .Build();
 
         substituteRepo.GetByIdAsync("film-abc-123").Returns(film);
