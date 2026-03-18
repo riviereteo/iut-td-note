@@ -86,14 +86,14 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
         var postResponse = await _client.PostAsJsonAsync("/films", request, JsonOptions);
         postResponse.EnsureSuccessStatusCode();
         var created = await postResponse.Content.ReadFromJsonAsync<Film>(JsonOptions);
-        Assert.NotNull(created);
 
         // Act
         var response = await _client.GetAsync($"/films/{created.Id}");
+        var film = await response.Content.ReadFromJsonAsync<Film>(JsonOptions);
 
         // Assert
+        Assert.NotNull(created);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var film = await response.Content.ReadFromJsonAsync<Film>(JsonOptions);
         Assert.NotNull(film);
         Assert.Equal(created.Id, film.Id);
         Assert.Equal("Film pour GET", film.Title);

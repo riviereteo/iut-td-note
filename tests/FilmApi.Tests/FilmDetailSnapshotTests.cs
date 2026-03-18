@@ -15,6 +15,7 @@ public class FilmDetailSnapshotTests
     [Fact]
     public async Task GetById_Returns_Complex_Film_Structure()
     {
+        // Arrange
         var substituteRepo = Substitute.For<IFilmRepository>();
         var director = new Director
         {
@@ -50,8 +51,9 @@ public class FilmDetailSnapshotTests
         substituteRepo.GetByIdAsync("film-abc-123").Returns(film);
 
         var service = new FilmService(substituteRepo);
+        // Act
         var result = await service.GetByIdAsync("film-abc-123");
-
+        // Assert
         Assert.NotNull(result);
         Assert.Equal("film-abc-123", result!.Id);
         Assert.Equal("Dune", result.Title);
