@@ -112,4 +112,67 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
         Assert.Equal("Film pour GET", film.Title);
         Assert.Equal("Martin", film.Director.LastName);
     }
+
+    [Fact]
+    public async Task GET_films_releaseYear_Returns_Only_Films_Of_That_Year()
+    {
+        // Arrange
+        var film2021a = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("Dune")
+            .WithYear(2021)
+            .WithReleaseDate(new DateTime(2021, 9, 15))
+            .Build();
+
+        var film2021b = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("The Power of the Dog")
+            .WithYear(2021)
+            .WithReleaseDate(new DateTime(2021, 11, 17))
+            .Build();
+
+        var film2022 = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("Everything Everywhere All at Once")
+            .WithYear(2022)
+            .WithReleaseDate(new DateTime(2022, 3, 25))
+            .Build();
+
+        await _client.PostAsJsonAsync("/films", film2021a, JsonOptions);
+        await _client.PostAsJsonAsync("/films", film2021b, JsonOptions);
+        await _client.PostAsJsonAsync("/films", film2022, JsonOptions);
+
+        // Act
+        var response = await _client.GetAsync("/films?releaseYear=2021");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var films = await response.Content.ReadFromJsonAsync<List<Film>>(JsonOptions);
+        Assert.NotNull(films);
+        Assert.Equal(2, films.Count);
+        Assert.All(films, f => Assert.Equal(2021, f.ReleaseDate!.Value.Year));
+        Assert.Contains(films, f => f.Title == "Dune");
+        Assert.Contains(films, f => f.Title == "The Power of the Dog");
+    }
+
+    [Fact]
+    public async Task DELETE_films_id_Removes_Film_From_Collection()
+    {
+        // Arrange
+        var request = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("Film à supprimer")
+            .WithYear(2020)
+            .Build();
+
+        var postResponse = await _client.PostAsJsonAsync("/films", request, JsonOptions);
+        postResponse.EnsureSuccessStatusCode();
+        var created = await postResponse.Content.ReadFromJsonAsync<Film>(JsonOptions);
+
+        // Act
+        var deleteResponse = await _client.DeleteAsync($"/films/{created!.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+        var getResponse = await _client.GetAsync("/films");
+        var films = await getResponse.Content.ReadFromJsonAsync<List<Film>>(JsonOptions);
+        Assert.NotNull(films);
+        Assert.DoesNotContain(films, f => f.Id == created.Id);
+    }
 }
