@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using FilmApi.Models;
+using FilmApi.Tests.Builders;
 using Xunit;
 
 namespace FilmApi.Tests;
@@ -35,25 +36,31 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
     }
 
     public void Dispose() => _factory.Dispose();
-
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task POST_films_Returns_201_And_Film()
     {
         // Arrange
-        var director = new Director { Id = "d1", LastName = "Dupont", FirstName = "Jean", Nationality = "FR" };
-        var request = new CreateFilmRequest(
-            Title: "Mon Film",
-            Summary: "Résumé.",
-            Year: 2024,
-            DurationMinutes: 90,
-            ReleaseDate: null,
-            Director: director,
-            Genres: new List<Genre> { new() { Id = "g1", Name = "Drame" } },
-            Actors: new List<Actor>(),
-            ProductionCountry: new Country { Code = "FR", Name = "France" }
-        );
+        var request = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("Mon Film")
+            .WithSummary("Résumé.")
+            .WithYear(2024)
+            .WithDurationMinutes(90)
+            .WithNoReleaseDate()
+            .WithDirector(DirectorBuilder.ADirector()
+                .WithId("d1")
+                .WithLastName("Dupont")
+                .WithFirstName("Jean")
+                .WithNationality("FR"))
+            .WithGenres(GenreBuilder.AGenre()
+                .WithId("g1")
+                .WithName("Drame"))
+            .WithNoActors()
+            .WithProductionCountry(CountryBuilder.ACountry()
+                .WithCode("FR")
+                .WithName("France"))
+            .Build();
 
         // Act
         var response = await _client.PostAsJsonAsync("/films", request, JsonOptions);
@@ -71,24 +78,30 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
     public async Task GET_films_id_Returns_200_After_Post()
     {
         // Arrange
-        var director = new Director { Id = "d2", LastName = "Martin", FirstName = "Marie", Nationality = "FR" };
-        var request = new CreateFilmRequest(
-            "Film pour GET",
-            "Résumé GET",
-            2023,
-            100,
-            null,
-            director,
-            new List<Genre> { new() { Id = "g2", Name = "Comédie" } },
-            new List<Actor>(),
-            null
-        );
+        var request = CreateFilmRequestBuilder.ACreateFilmRequest()
+            .WithTitle("Film pour GET")
+            .WithSummary("Résumé GET")
+            .WithYear(2023)
+            .WithDurationMinutes(100)
+            .WithNoReleaseDate()
+            .WithDirector(DirectorBuilder.ADirector()
+                .WithId("d2")
+                .WithLastName("Martin")
+                .WithFirstName("Marie")
+                .WithNationality("FR"))
+            .WithGenres(GenreBuilder.AGenre()
+                .WithId("g2")
+                .WithName("Comédie"))
+            .WithNoActors()
+            .WithNoProductionCountry()
+            .Build();
+
         var postResponse = await _client.PostAsJsonAsync("/films", request, JsonOptions);
         postResponse.EnsureSuccessStatusCode();
         var created = await postResponse.Content.ReadFromJsonAsync<Film>(JsonOptions);
 
         // Act
-        var response = await _client.GetAsync($"/films/{created.Id}");
+        var response = await _client.GetAsync($"/films/{created!.Id}");
         var film = await response.Content.ReadFromJsonAsync<Film>(JsonOptions);
 
         // Assert

@@ -1,6 +1,7 @@
 using FilmApi.Models;
 using FilmApi.Services;
 using FilmApi.Repositories;
+using FilmApi.Tests.Builders;
 using NSubstitute;
 using Xunit;
 
@@ -17,42 +18,50 @@ public class FilmDetailSnapshotTests
     {
         // Arrange
         var substituteRepo = Substitute.For<IFilmRepository>();
-        var director = new Director
-        {
-            Id = "dir-1",
-            LastName = "Villeneuve",
-            FirstName = "Denis",
-            Nationality = "CA",
-            BirthDate = new DateTime(1967, 10, 3)
-        };
-        var actors = new List<Actor>
-        {
-            new() { Id = "a1", LastName = "Chalamet", FirstName = "Timothée", Role = "Paul Atréides" },
-            new() { Id = "a2", LastName = "Zendaya", FirstName = "", Role = "Chani" }
-        };
-        var genres = new List<Genre>
-        {
-            new() { Id = "g1", Name = "Science-Fiction" },
-            new() { Id = "g2", Name = "Aventure" }
-        };
-        var film = new Film
-        {
-            Id = "film-abc-123",
-            Title = "Dune",
-            Summary = "Sur la planète Arrakis...",
-            Year = 2021,
-            DurationMinutes = 155,
-            ReleaseDate = new DateTime(2021, 9, 15),
-            Director = director,
-            Actors = actors,
-            Genres = genres,
-            ProductionCountry = new Country { Code = "US", Name = "États-Unis" }
-        };
+
+        var film = FilmBuilder.AFilm()
+            .WithId("film-abc-123")
+            .WithTitle("Dune")
+            .WithSummary("Sur la planète Arrakis...")
+            .WithYear(2021)
+            .WithDurationMinutes(155)
+            .WithReleaseDate(new DateTime(2021, 9, 15))
+            .WithDirector(DirectorBuilder.ADirector()
+                .WithId("dir-1")
+                .WithLastName("Villeneuve")
+                .WithFirstName("Denis")
+                .WithNationality("CA")
+                .WithBirthDate(new DateTime(1967, 10, 3)))
+            .WithActors(
+                ActorBuilder.AnActor()
+                    .WithId("a1")
+                    .WithLastName("Chalamet")
+                    .WithFirstName("Timothée")
+                    .WithRole("Paul Atréides"),
+                ActorBuilder.AnActor()
+                    .WithId("a2")
+                    .WithLastName("Zendaya")
+                    .WithFirstName("")
+                    .WithRole("Chani"))
+            .WithGenres(
+                GenreBuilder.AGenre()
+                    .WithId("g1")
+                    .WithName("Science-Fiction"),
+                GenreBuilder.AGenre()
+                    .WithId("g2")
+                    .WithName("Aventure"))
+            .WithProductionCountry(CountryBuilder.ACountry()
+                .WithCode("US")
+                .WithName("États-Unis"))
+            .Build();
+
         substituteRepo.GetByIdAsync("film-abc-123").Returns(film);
 
         var service = new FilmService(substituteRepo);
+
         // Act
         var result = await service.GetByIdAsync("film-abc-123");
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal("film-abc-123", result!.Id);
